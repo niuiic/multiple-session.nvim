@@ -27,7 +27,7 @@ require("multiple-session").setup({
 	-- whether to auto save session when leave neovim(if this session exists)
 	auto_save_session = true,
 	-- whether to auto create session at leave if this session doesn't exist
-	auto_create_session = false,
+	force_auto_save = false,
 	-- name of default session
 	default_session = "default",
 })

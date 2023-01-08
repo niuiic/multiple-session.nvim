@@ -149,7 +149,7 @@ vim.api.nvim_create_autocmd("VimLeave", {
 	callback = function()
 		if config.auto_save_session then
 			local session_path = get_session_path(last_session)
-			if lib.file_or_dir_exists(session_path) ~= true and config.auto_create_session ~= true then
+			if lib.file_or_dir_exists(session_path) ~= true and config.force_auto_save ~= true then
 				return
 			end
 			save_session(last_session)

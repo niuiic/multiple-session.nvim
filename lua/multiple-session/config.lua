@@ -6,7 +6,7 @@ local config = {
 	auto_load_session = true,
 	force_auto_load = false,
 	auto_save_session = true,
-	auto_create_session = false,
+	force_auto_save = false,
 	default_session = "default",
 }
 
