@@ -32,7 +32,7 @@ end
 -- save session
 local store_session = function(session_name)
 	if lib.file_or_dir_exists(session_dir) == false then
-		vim.cmd("!mkdir " .. session_dir)
+		vim.cmd("!mkdir -p " .. session_dir)
 	end
 	last_session = session_name
 	local session_path = get_session_path(last_session)
@@ -106,7 +106,7 @@ end
 local remove_session = function(session_name)
 	local session_path = get_session_path(session_name)
 	if lib.file_or_dir_exists(session_path) then
-		vim.cmd("!rm " .. session_path)
+		vim.cmd("!rm -rf " .. session_path)
 		vim.notify("session " .. session_name .. " is deleted", vim.log.levels.INFO, {
 			title = "Session",
 		})
