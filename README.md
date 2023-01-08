@@ -20,12 +20,14 @@ require("multiple-session").setup({
 	-- used to search root path of the project
 	-- if .git does not exist, current directory path would be used
 	root_pattern = ".git",
-	-- whether to auto load session when neovim start
+	-- whether to auto load session when neovim start(if this session exists)
 	auto_load_session = true,
 	-- whether to auto load session at start when neovim opened with args
 	force_auto_load = false,
-	-- whether to auto save session when leave neovim
+	-- whether to auto save session when leave neovim(if this session exists)
 	auto_save_session = true,
+	-- whether to auto create session at leave if this session doesn't exist
+	auto_create_session = false,
 	-- name of default session
 	default_session = "default",
 })
