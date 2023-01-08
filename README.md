@@ -45,3 +45,7 @@ require("multiple-session").setup({
     { "<leader>sd", "<cmd>DeleteSession<CR>", desc = "delete session" },
 }
 ```
+
+## Notice
+
+For users who use `noice.nvim` together, make sure to load `noice.nvim` at `VimEnter`(set `event = "VimEnter"`), but not at start. 
