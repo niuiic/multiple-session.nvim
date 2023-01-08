@@ -147,6 +147,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
 vim.api.nvim_create_autocmd("VimLeave", {
 	pattern = "*",
 	callback = function()
+		if config.force_auto_load ~= true and #vim.v.argv > 1 then
+			return
+		end
 		if config.auto_save_session then
 			local session_path = get_session_path(last_session)
 			if lib.file_or_dir_exists(session_path) ~= true and config.force_auto_save ~= true then
