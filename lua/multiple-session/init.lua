@@ -131,7 +131,7 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
 	pattern = "*",
 	callback = function()
-		if config.auto_load_session then
+		if config.auto_load_session and #vim.v.argv == 1 then
 			if restore_session(config.default_session) then
 				vim.cmd("e")
 			end
