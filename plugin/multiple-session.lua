@@ -15,3 +15,7 @@ end, {})
 vim.api.nvim_create_user_command("RestoreSession", function()
 	multiple_session.restore_session(nil, true)
 end, {})
+
+vim.api.nvim_create_user_command("DeleteSession", function()
+	multiple_session.delete_session()
+end, {})
