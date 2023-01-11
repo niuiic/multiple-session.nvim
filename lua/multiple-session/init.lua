@@ -1,9 +1,9 @@
-local config = require("multiple-session.config")
+local static = require("multiple-session.static")
 local lib = require("multiple-session.lib")
 
-local project_root = lib.root_pattern(config.root_pattern)
-local session_dir = config.session_dir(project_root)
-local last_session = config.default_session
+local project_root = lib.root_pattern(static.config.root_pattern)
+local session_dir = static.config.session_dir(project_root)
+local last_session = static.config.default_session
 local get_session_path = function(session_name)
 	return session_dir .. "/" .. session_name .. ".vim"
 end
@@ -131,11 +131,11 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
 	pattern = "*",
 	callback = function()
-		if config.force_auto_load ~= true and #vim.v.argv > 1 then
+		if static.config.force_auto_load ~= true and #vim.v.argv > 1 then
 			return
 		end
-		if config.auto_load_session then
-			if restore_session(config.default_session) then
+		if static.config.auto_load_session then
+			if restore_session(static.config.default_session) then
 				vim.cmd("e")
 			end
 		end
@@ -147,12 +147,12 @@ vim.api.nvim_create_autocmd("VimEnter", {
 vim.api.nvim_create_autocmd("VimLeave", {
 	pattern = "*",
 	callback = function()
-		if config.force_auto_load ~= true and #vim.v.argv > 1 then
+		if static.config.force_auto_load ~= true and #vim.v.argv > 1 then
 			return
 		end
-		if config.auto_save_session then
+		if static.config.auto_save_session then
 			local session_path = get_session_path(last_session)
-			if lib.file_or_dir_exists(session_path) ~= true and config.force_auto_save ~= true then
+			if lib.file_or_dir_exists(session_path) ~= true and static.config.force_auto_save ~= true then
 				return
 			end
 			save_session(last_session)
@@ -160,17 +160,17 @@ vim.api.nvim_create_autocmd("VimLeave", {
 	end,
 })
 local enable_auto_save_session = function()
-	config.auto_save_session = true
+	static.config.auto_save_session = true
 end
 local disable_auto_save_session = function()
-	config.auto_save_session = false
+	static.config.auto_save_session = false
 end
 
 -- setup
 local setup = function(new_config)
-	config = vim.tbl_deep_extend("force", config, new_config or {})
-	project_root = lib.root_pattern(config.root_pattern)
-	session_dir = config.session_dir(project_root)
+	static.config = vim.tbl_deep_extend("force", static.config, new_config or {})
+	project_root = lib.root_pattern(static.config.root_pattern)
+	session_dir = static.config.session_dir(project_root)
 end
 
 return {

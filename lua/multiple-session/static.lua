@@ -10,4 +10,4 @@ local config = {
 	default_session = "default",
 }
 
-return config
+return { config = config }
