@@ -136,7 +136,10 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		end
 		if static.config.auto_load_session then
 			if restore_session(static.config.default_session) then
-				vim.cmd("e")
+				local buf_name = vim.api.nvim_buf_get_name(0)
+				if buf_name ~= nil and buf_name ~= "" then
+					vim.cmd("e")
+				end
 			end
 		end
 	end,
