@@ -30,6 +30,10 @@ require("multiple-session").setup({
 	force_auto_save = false,
 	-- name of default session
 	default_session = "default",
+	-- default arg number
+	-- for neovim > v0.9, nvim command may have the default arg `--embed`
+	-- in this case, you have to set this to 2 for trigger session restoration correctly
+	default_arg_num = 1,
 })
 ```
 
@@ -48,4 +52,4 @@ require("multiple-session").setup({
 
 ## Notice
 
-For users who use `noice.nvim` together, make sure to load `noice.nvim` at `VimEnter`(set `event = "VimEnter"`), but not at start. 
+For users who use `noice.nvim` together, make sure to load `noice.nvim` at `VimEnter`(set `event = "VimEnter"`), but not at start.

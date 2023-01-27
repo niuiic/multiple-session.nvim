@@ -131,7 +131,7 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
 	pattern = "*",
 	callback = function()
-		if static.config.force_auto_load ~= true and #vim.v.argv > 1 then
+		if static.config.force_auto_load ~= true and #vim.v.argv > static.config.default_arg_num then
 			return
 		end
 		if static.config.auto_load_session then
