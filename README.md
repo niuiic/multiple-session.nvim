@@ -32,7 +32,7 @@ require("multiple-session").setup({
 	default_session = "default",
 	-- default arg number
 	-- for neovim > v0.9, nvim command may have the default arg `--embed`
-	-- in this case, you have to set this to 2 for trigger session restoration correctly
+	-- in this case, you have to set this to 2 for triggering session restoration correctly
 	default_arg_num = 1,
 })
 ```
