@@ -1,7 +1,7 @@
+local core = require("niuiic-core")
 local static = require("multiple-session.static")
-local lib = require("multiple-session.lib")
 
-local project_root = lib.root_pattern(static.config.root_pattern)
+local project_root = core.file.find_root_path(static.config.root_pattern)
 local session_dir = static.config.session_dir(project_root)
 local last_session = static.config.default_session
 local get_session_path = function(session_name)
@@ -31,7 +31,7 @@ end
 
 -- save session
 local store_session = function(session_name)
-	if lib.file_or_dir_exists(session_dir) == false then
+	if core.file.file_or_dir_exists(session_dir) == false then
 		vim.cmd("!mkdir -p " .. session_dir)
 	end
 	last_session = session_name
@@ -61,7 +61,7 @@ end
 -- restore session
 local load_session = function(session_name, notify_err)
 	local session_path = get_session_path(session_name)
-	if lib.file_or_dir_exists(session_path) then
+	if core.file.file_or_dir_exists(session_path) then
 		last_session = session_name
 		-- close all buffers
 		local status = pcall(vim.cmd, "%bd")
@@ -105,7 +105,7 @@ end
 -- delete session
 local remove_session = function(session_name)
 	local session_path = get_session_path(session_name)
-	if lib.file_or_dir_exists(session_path) then
+	if core.file.file_or_dir_exists(session_path) then
 		vim.cmd("!rm -rf " .. session_path)
 		vim.notify("session " .. session_name .. " is deleted", vim.log.levels.INFO, {
 			title = "Session",
@@ -155,7 +155,7 @@ vim.api.nvim_create_autocmd("VimLeave", {
 		end
 		if static.config.auto_save_session then
 			local session_path = get_session_path(last_session)
-			if lib.file_or_dir_exists(session_path) ~= true and static.config.force_auto_save ~= true then
+			if core.file.file_or_dir_exists(session_path) ~= true and static.config.force_auto_save ~= true then
 				return
 			end
 			save_session(last_session)
@@ -172,7 +172,7 @@ end
 -- setup
 local setup = function(new_config)
 	static.config = vim.tbl_deep_extend("force", static.config, new_config or {})
-	project_root = lib.root_pattern(static.config.root_pattern)
+	project_root = core.file.find_root_path(static.config.root_pattern)
 	session_dir = static.config.session_dir(project_root)
 end
 

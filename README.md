@@ -8,6 +8,10 @@ Provides multi-session management capabilities.
 - auto save session
 - switch between multiple sessions
 
+## Dependencies
+
+- [niuiic/niuiic-core.nvim](https://github.com/niuiic/niuiic-core.nvim)
+
 ## Config
 
 ```lua
