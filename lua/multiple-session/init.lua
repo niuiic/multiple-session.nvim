@@ -32,7 +32,7 @@ end
 -- save session
 local store_session = function(session_name)
 	if core.file.file_or_dir_exists(session_dir) == false then
-		string.format("!%s %s", static.config.create_dir, session_dir)
+		vim.cmd(string.format("!%s %s", static.config.create_dir, session_dir))
 	end
 	last_session = session_name
 	local session_path = get_session_path(last_session)
