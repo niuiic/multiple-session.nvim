@@ -9,6 +9,7 @@ local config = {
 	force_auto_save = false,
 	default_session = "default",
 	default_arg_num = 1,
+	create_dir = "mkdir -p",
 }
 
 return { config = config }

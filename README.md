@@ -38,6 +38,8 @@ require("multiple-session").setup({
 	-- for neovim > v0.9, nvim command may have the default arg `--embed`
 	-- in this case, you have to set this to 2 for triggering session restoration correctly on startup
 	default_arg_num = 1,
+	-- command to create directory
+	create_dir = "mkdir -p",
 })
 ```
 
