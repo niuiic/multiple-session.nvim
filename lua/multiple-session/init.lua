@@ -96,6 +96,9 @@ local restore_session = function(session_name, notify_err)
 	else
 		local success = false
 		select_session(function(choice)
+			if choice ~= last_session then
+				save_session(last_session)
+			end
 			success = load_session(choice, notify_err)
 		end)
 		return success
