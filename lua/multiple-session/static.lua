@@ -10,6 +10,7 @@ local config = {
 	default_session = "default",
 	default_arg_num = 1,
 	create_dir = "mkdir -p",
+	delete_session = "rm -rf",
 }
 
 return { config = config }

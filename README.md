@@ -40,6 +40,8 @@ require("multiple-session").setup({
 	default_arg_num = 1,
 	-- command to create directory
 	create_dir = "mkdir -p",
+	-- command to delete session file
+	delete_session = "rm -rf",
 })
 ```
 
@@ -59,3 +61,5 @@ require("multiple-session").setup({
 ## Notice
 
 For users who use `noice.nvim` together, make sure to load `noice.nvim` at `VimEnter`(set `event = "VimEnter"`), but not at start.
+
+For any problems that arise, first try deleting the session file and rebuilding.
