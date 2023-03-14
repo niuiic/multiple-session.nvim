@@ -1,19 +1,27 @@
 local core = require("niuiic-core")
 local static = require("multiple-session.static")
 
-local project_root = core.file.find_root_path(static.config.root_pattern)
-local session_dir = static.config.session_dir(project_root)
+local project_root = function()
+	return core.file.find_root_path(static.config.root_pattern)
+end
+local session_dir = function()
+	return static.config.session_dir(project_root())
+end
 local last_session = static.config.default_session
 local get_session_path = function(session_name)
-	return session_dir .. "/" .. session_name .. ".vim"
+	return string.format("%s/%s/%s.vim", session_dir(), session_name, session_name)
 end
 
 local select_session = function(cb)
 	local session_list = {}
-	for path, path_type in vim.fs.dir(session_dir) do
-		if path_type == "file" then
-			local sn = string.sub(path, 1, string.len(path) - string.len(".vim"))
-			table.insert(session_list, sn)
+	for path, path_type in vim.fs.dir(session_dir()) do
+		if path_type == "directory" then
+			for path2, path_type2 in vim.fs.dir(session_dir() .. "/" .. path) do
+				if path_type2 == "file" then
+					local sn = string.sub(path2, 1, string.len(path2) - string.len(".vim"))
+					table.insert(session_list, sn)
+				end
+			end
 		end
 	end
 	if #session_list == 0 then
@@ -31,8 +39,9 @@ end
 
 -- save session
 local store_session = function(session_name)
-	if core.file.file_or_dir_exists(session_dir) == false then
-		vim.cmd(string.format("!%s %s", static.config.create_dir, session_dir))
+	local cur_session_dir = session_dir() .. "/" .. session_name
+	if core.file.file_or_dir_exists(cur_session_dir) == false then
+		vim.cmd(string.format("!%s %s", static.config.create_dir, cur_session_dir))
 	end
 	last_session = session_name
 	local session_path = get_session_path(last_session)
@@ -175,8 +184,7 @@ end
 -- setup
 local setup = function(new_config)
 	static.config = vim.tbl_deep_extend("force", static.config, new_config or {})
-	project_root = core.file.find_root_path(static.config.root_pattern)
-	session_dir = static.config.session_dir(project_root)
+	last_session = static.config.default_session
 end
 
 return {
