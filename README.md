@@ -7,6 +7,7 @@ Provides multi-session management capabilities.
 - auto load session
 - auto save session
 - switch between multiple sessions
+- hooks on save and restore
 
 ## Dependencies
 
@@ -42,6 +43,19 @@ require("multiple-session").setup({
 	create_dir = "mkdir -p",
 	-- command to delete session file
 	delete_session = "rm -rf",
+	-- function to execute when session saved
+	on_session_saved = function(session_dir) end,
+	-- function to execute when session restored
+	on_session_restored = function(session_dir) end,
+	-- example
+	-- on_session_saved = function(session_dir)
+	-- 	require("trailblazer").save_trailblazer_state_to_file(session_dir .. "/" .. "trailBlazer")
+	-- end,
+	-- on_session_restored = function(session_dir)
+	-- 	if require("niuiic-core").file.file_or_dir_exists(session_dir .. "/" .. "trailBlazer") then
+	-- 		require("trailblazer").load_trailblazer_state_from_file(session_dir .. "/" .. "trailBlazer")
+	-- 	end
+	-- end,
 })
 ```
 
@@ -61,5 +75,7 @@ require("multiple-session").setup({
 ## Notice
 
 For users who use `noice.nvim` together, make sure to load `noice.nvim` at `VimEnter`(set `event = "VimEnter"`), but not at start.
+
+> Maybe you need to use the same settings for nvim-ufo.
 
 For any problems that arise, first try deleting the session file and rebuilding.

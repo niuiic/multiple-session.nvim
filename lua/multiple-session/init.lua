@@ -49,6 +49,7 @@ local store_session = function(session_name)
 	vim.notify("session is stored in " .. session_path, vim.log.levels.INFO, {
 		title = "Session",
 	})
+	static.config.on_session_saved(cur_session_dir)
 end
 
 local save_session = function(session_name)
@@ -85,6 +86,7 @@ local load_session = function(session_name, notify_err)
 		vim.notify('successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
 			title = "Session",
 		})
+		static.config.on_session_restored(session_dir() .. "/" .. session_name)
 		return true
 	else
 		if notify_err == true then
@@ -116,9 +118,9 @@ end
 
 -- delete session
 local remove_session = function(session_name)
-	local session_path = get_session_path(session_name)
-	if core.file.file_or_dir_exists(session_path) then
-		vim.cmd(string.format("!%s %s", static.config.delete_session, session_path))
+	local cur_session_dir = session_dir() .. "/" .. session_name
+	if core.file.file_or_dir_exists(cur_session_dir) then
+		vim.cmd(string.format("!%s %s", static.config.delete_session, cur_session_dir))
 		vim.notify("session " .. session_name .. " is deleted", vim.log.levels.INFO, {
 			title = "Session",
 		})
