@@ -76,6 +76,6 @@ require("multiple-session").setup({
 
 For users who use `noice.nvim` together, make sure to load `noice.nvim` at `VimEnter`(set `event = "VimEnter"`), but not at start.
 
-> Maybe you need to use the same settings for nvim-ufo.
+> Maybe you need the same settings for nvim-ufo and other plugins.
 
-For any problems that arise, first try deleting the session file and rebuilding.
+For any arised problem, first try deleting the session file and rebuilding.
