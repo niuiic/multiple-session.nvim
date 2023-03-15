@@ -2,7 +2,7 @@ local core = require("niuiic-core")
 local static = require("multiple-session.static")
 
 local project_root = function()
-	return core.file.find_root_path(static.config.root_pattern)
+	return core.file.root_path(static.config.root_pattern)
 end
 local session_dir = function()
 	return static.config.session_dir(project_root())
