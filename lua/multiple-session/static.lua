@@ -1,6 +1,6 @@
 local config = {
 	session_dir = function(project_root)
-		return project_root .. ".nvim/session"
+		return project_root .. "/.nvim/session"
 	end,
 	root_pattern = ".git",
 	auto_load_session = true,

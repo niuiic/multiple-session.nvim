@@ -74,6 +74,7 @@ local load_session = function(session_name, notify_err)
 	if core.file.file_or_dir_exists(session_path) then
 		last_session = session_name
 		-- close all buffers
+		---@diagnostic disable-next-line
 		local status = pcall(vim.cmd, "%bd")
 		if status == false then
 			vim.notify("some buffers are not saved", vim.log.levels.ERROR, {
