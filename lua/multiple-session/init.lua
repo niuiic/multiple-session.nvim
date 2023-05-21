@@ -15,13 +15,11 @@ end
 local select_session = function(cb)
 	local session_list = {}
 	for path, path_type in vim.fs.dir(session_dir()) do
-		if path_type == "directory" then
-			for path2, path_type2 in vim.fs.dir(session_dir() .. "/" .. path) do
-				if path_type2 == "file" then
-					local sn = string.sub(path2, 1, string.len(path2) - string.len(".vim"))
-					table.insert(session_list, sn)
-				end
-			end
+		if
+			path_type == "directory"
+			and core.file.file_or_dir_exists(string.format("%s/%s/%s", session_dir(), path, path .. ".vim"))
+		then
+			table.insert(session_list, path)
 		end
 	end
 	if #session_list == 0 then
