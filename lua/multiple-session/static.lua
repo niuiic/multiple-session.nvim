@@ -12,7 +12,11 @@ local config = {
 	create_dir = "mkdir -p",
 	delete_session = "rm -rf",
 	---@diagnostic disable-next-line
+	on_session_to_save = function(session_dir) end,
+	---@diagnostic disable-next-line
 	on_session_saved = function(session_dir) end,
+	---@diagnostic disable-next-line
+	on_session_to_restore = function(session_dir) end,
 	---@diagnostic disable-next-line
 	on_session_restored = function(session_dir) end,
 }

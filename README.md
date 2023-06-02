@@ -43,9 +43,13 @@ require("multiple-session").setup({
 	create_dir = "mkdir -p",
 	-- command to delete session file
 	delete_session = "rm -rf",
-	-- function to execute when session saved
+	---@diagnostic disable-next-line
+	on_session_to_save = function(session_dir) end,
+	---@diagnostic disable-next-line
 	on_session_saved = function(session_dir) end,
-	-- function to execute when session restored
+	---@diagnostic disable-next-line
+	on_session_to_restore = function(session_dir) end,
+	---@diagnostic disable-next-line
 	on_session_restored = function(session_dir) end,
 })
 ```
@@ -122,16 +126,20 @@ return {
 			on_session_saved = function(session_dir)
 				require("trailblazer").save_trailblazer_state_to_file(session_dir .. "/" .. "trailBlazer")
 				store_breakpoints(session_dir .. "/breakpoints")
-				-- quickfix.nvim is required(https://github.com/niuiic/quickfix.nvim)
 				require("quickfix").store_qf(session_dir .. "/quickfix")
 				vim.cmd("wundo" .. session_dir .. "/undo")
 			end,
 			on_session_restored = function(session_dir)
-				if require("niuiic-core").file.file_or_dir_exists(session_dir .. "/" .. "trailBlazer") then
+				if core.file.file_or_dir_exists(session_dir .. "/" .. "trailBlazer") then
 					require("trailblazer").load_trailblazer_state_from_file(session_dir .. "/" .. "trailBlazer")
 				end
-				restore_breakpoints(session_dir .. "/breakpoints")
-				require("quickfix").restore_qf(session_dir .. "/quickfix")
+				if core.file.file_or_dir_exists(session_dir .. "/" .. "breakpoints") then
+					restore_breakpoints(session_dir .. "/breakpoints")
+				end
+				if core.file.file_or_dir_exists(session_dir .. "/" .. "quickfix") then
+					-- quickfix.nvim is required(https://github.com/niuiic/quickfix.nvim)
+					require("quickfix").restore_qf(session_dir .. "/quickfix")
+				end
 				if core.file.file_or_dir_exists(session_dir .. "/undo") then
 					vim.cmd("rundo" .. session_dir .. "/undo")
 				end

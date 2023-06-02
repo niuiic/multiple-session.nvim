@@ -43,6 +43,7 @@ local store_session = function(session_name)
 	end
 	last_session = session_name
 	local session_path = get_session_path(last_session)
+	static.config.on_session_to_save(cur_session_dir)
 	vim.cmd("mks! " .. session_path)
 	vim.notify("session is stored in " .. session_path, vim.log.levels.INFO, {
 		title = "Session",
@@ -80,6 +81,7 @@ local load_session = function(session_name, notify_err)
 			})
 			return false
 		end
+		static.config.on_session_to_restore(session_dir())
 		-- load session
 		vim.cmd("silent source " .. session_path)
 		vim.notify('successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
