@@ -1,34 +1,25 @@
 local core = require("core")
 local static = require("multiple-session.static")
+local utils = require("multiple-session.utils")
 
-local project_root = function()
-	return core.file.root_path(static.config.root_pattern)
-end
-local session_dir = function()
-	return static.config.session_dir(project_root())
-end
-local last_session = static.config.default_session
-local get_session_path = function(session_name)
-	return string.format("%s/%s/%s.vim", session_dir(), session_name, session_name)
-end
+local cur_session = static.config.default_session
 
 local select_session = function(cb)
 	local session_list = {}
-	for path, path_type in vim.fs.dir(session_dir()) do
-		if
-			path_type == "directory"
-			and core.file.file_or_dir_exists(string.format("%s/%s/%s", session_dir(), path, path .. ".vim"))
-		then
+	for path, path_type in vim.fs.dir(utils.session_dir()) do
+		if path_type == "directory" and core.file.file_or_dir_exists(utils.session_path(path)) then
 			table.insert(session_list, path)
 		end
 	end
+
 	if #session_list == 0 then
-		vim.notify("no session available", vim.log.levels.ERROR, {
+		vim.notify("No session available", vim.log.levels.WARN, {
 			title = "Session",
 		})
 		return
 	end
-	vim.ui.select(session_list, { prompt = "select session" }, function(choice)
+
+	vim.ui.select(session_list, { prompt = "Select session" }, function(choice)
 		if choice ~= nil then
 			cb(choice)
 		end
@@ -37,17 +28,20 @@ end
 
 -- save session
 local store_session = function(session_name)
-	local cur_session_dir = session_dir() .. "/" .. session_name
-	if core.file.file_or_dir_exists(cur_session_dir) == false then
-		vim.cmd(string.format("!%s %s", static.config.create_dir, cur_session_dir))
+	cur_session = session_name
+
+	local cur_session_dir = utils.session_dir() .. "/" .. session_name
+	if not core.file.file_or_dir_exists(cur_session_dir) then
+		core.file.mkdir(cur_session_dir)
 	end
-	last_session = session_name
-	local session_path = get_session_path(last_session)
+
 	static.config.on_session_to_save(cur_session_dir)
-	vim.cmd("mks! " .. session_path)
-	vim.notify("session is stored in " .. session_path, vim.log.levels.INFO, {
+
+	vim.cmd("mks! " .. utils.session_path(cur_session))
+	vim.notify("session is stored in " .. utils.session_path(cur_session), vim.log.levels.INFO, {
 		title = "Session",
 	})
+
 	static.config.on_session_saved(cur_session_dir)
 end
 
@@ -57,7 +51,7 @@ local save_session = function(session_name)
 	else
 		vim.ui.input({
 			prompt = "Session name: ",
-			default = last_session,
+			default = cur_session,
 		}, function(input)
 			if input == nil or input == "" then
 				return
@@ -69,27 +63,7 @@ end
 
 -- restore session
 local load_session = function(session_name, notify_err)
-	local session_path = get_session_path(session_name)
-	if core.file.file_or_dir_exists(session_path) then
-		last_session = session_name
-		-- close all buffers
-		---@diagnostic disable-next-line
-		local status = pcall(vim.cmd, "%bd")
-		if status == false then
-			vim.notify("some buffers are not saved", vim.log.levels.ERROR, {
-				title = "Session",
-			})
-			return false
-		end
-		static.config.on_session_to_restore(session_dir())
-		-- load session
-		vim.cmd("silent source " .. session_path)
-		vim.notify('successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
-			title = "Session",
-		})
-		static.config.on_session_restored(session_dir() .. "/" .. session_name)
-		return true
-	else
+	if not core.file.file_or_dir_exists(utils.session_path(session_name)) then
 		if notify_err == true then
 			vim.notify("no session called " .. session_name, vim.log.levels.ERROR, {
 				title = "Session",
@@ -97,6 +71,30 @@ local load_session = function(session_name, notify_err)
 		end
 		return false
 	end
+
+	cur_session = session_name
+
+	-- close all buffers
+	---@diagnostic disable-next-line
+	local status = pcall(vim.cmd, "%bd")
+	if status == false then
+		vim.notify("some buffers are not saved", vim.log.levels.ERROR, {
+			title = "Session",
+		})
+		return false
+	end
+
+	static.config.on_session_to_restore(utils.session_dir())
+
+	-- load session
+	vim.cmd("silent source " .. utils.session_path(session_name))
+	vim.notify('successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
+		title = "Session",
+	})
+
+	static.config.on_session_restored(utils.session_dir() .. "/" .. session_name)
+
+	return true
 end
 
 ---@param session_name string | nil
@@ -108,8 +106,8 @@ local restore_session = function(session_name, notify_err)
 	else
 		local success = false
 		select_session(function(choice)
-			if choice ~= last_session then
-				save_session(last_session)
+			if choice ~= cur_session then
+				save_session(cur_session)
 			end
 			success = load_session(choice, notify_err)
 		end)
@@ -119,17 +117,19 @@ end
 
 -- delete session
 local remove_session = function(session_name)
-	local cur_session_dir = session_dir() .. "/" .. session_name
-	if core.file.file_or_dir_exists(cur_session_dir) then
-		vim.cmd(string.format("!%s %s", static.config.delete_session, cur_session_dir))
-		vim.notify("session " .. session_name .. " is deleted", vim.log.levels.INFO, {
+	local cur_session_dir = utils.session_dir() .. "/" .. session_name
+
+	if not core.file.file_or_dir_exists(cur_session_dir) then
+		vim.notify(string.format("Session %s not found", session_name), vim.log.levels.ERROR, {
 			title = "Session",
 		})
-	else
-		vim.notify("no session called " .. session_name, vim.log.levels.ERROR, {
-			title = "Session",
-		})
+		return
 	end
+
+	core.file.rmdir(cur_session_dir)
+	vim.notify("Session " .. session_name .. " is deleted", vim.log.levels.INFO, {
+		title = "Session",
+	})
 end
 
 local delete_session = function(session_name)
@@ -142,59 +142,21 @@ local delete_session = function(session_name)
 	end
 end
 
--- restore session at start
-vim.api.nvim_create_autocmd("VimEnter", {
-	pattern = "*",
-	callback = function()
-		if static.config.force_auto_load ~= true and #vim.v.argv > static.config.default_arg_num then
-			return
-		end
-		if static.config.auto_load_session then
-			if restore_session(static.config.default_session) then
-				local buf_name = vim.api.nvim_buf_get_name(0)
-				if buf_name ~= nil and buf_name ~= "" then
-					vim.cmd("e")
-				end
-			end
-		end
-	end,
-	nested = true,
-})
-
--- save session at leave
-vim.api.nvim_create_autocmd("VimLeave", {
-	pattern = "*",
-	callback = function()
-		if static.config.force_auto_load ~= true and #vim.v.argv > static.config.default_arg_num then
-			return
-		end
-		if static.config.auto_save_session then
-			local session_path = get_session_path(last_session)
-			if core.file.file_or_dir_exists(session_path) ~= true and static.config.force_auto_save ~= true then
-				return
-			end
-			save_session(last_session)
-		end
-	end,
-})
-local enable_auto_save_session = function()
-	static.config.auto_save_session = true
-end
-local disable_auto_save_session = function()
-	static.config.auto_save_session = false
+-- get current session
+local get_cur_session = function()
+	return cur_session
 end
 
 -- setup
 local setup = function(new_config)
 	static.config = vim.tbl_deep_extend("force", static.config, new_config or {})
-	last_session = static.config.default_session
+	cur_session = static.config.default_session
 end
 
 return {
 	setup = setup,
-	enable_auto_save_session = enable_auto_save_session,
-	disable_auto_save_session = disable_auto_save_session,
 	restore_session = restore_session,
 	save_session = save_session,
 	delete_session = delete_session,
+	cur_session = get_cur_session,
 }
