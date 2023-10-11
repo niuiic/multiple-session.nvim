@@ -33,6 +33,11 @@ require("multiple-session").setup({
 			return false
 		end
 
+		-- detect whether in a nested instance
+		if vim.env.NVIM then
+			return false
+		end
+
 		local core = require("core")
 		if not core.file.file_or_dir_exists(cur_session_path) then
 			return false
@@ -43,6 +48,10 @@ require("multiple-session").setup({
 	-- whether to auto save session when neovim exits
 	auto_save_session = function(_, cur_session_path)
 		if #vim.v.argv > 2 then
+			return false
+		end
+
+		if vim.env.NVIM then
 			return false
 		end
 
