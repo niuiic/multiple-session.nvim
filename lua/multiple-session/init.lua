@@ -38,7 +38,7 @@ local store_session = function(session_name)
 	static.config.on_session_to_save(cur_session_dir)
 
 	vim.cmd("mks! " .. utils.session_path(cur_session))
-	vim.notify("session is stored in " .. utils.session_path(cur_session), vim.log.levels.INFO, {
+	vim.notify("Session is stored in " .. utils.session_path(cur_session), vim.log.levels.INFO, {
 		title = "Session",
 	})
 
@@ -65,7 +65,7 @@ end
 local load_session = function(session_name, notify_err)
 	if not core.file.file_or_dir_exists(utils.session_path(session_name)) then
 		if notify_err == true then
-			vim.notify("no session called " .. session_name, vim.log.levels.ERROR, {
+			vim.notify("No session called " .. session_name, vim.log.levels.ERROR, {
 				title = "Session",
 			})
 		end
@@ -76,9 +76,9 @@ local load_session = function(session_name, notify_err)
 
 	-- close all buffers
 	---@diagnostic disable-next-line
-	local status = pcall(vim.cmd, "%bd")
-	if status == false then
-		vim.notify("some buffers are not saved", vim.log.levels.ERROR, {
+	local ok = pcall(vim.cmd, "%bd")
+	if ok == false then
+		vim.notify("Some buffers are not saved", vim.log.levels.ERROR, {
 			title = "Session",
 		})
 		return false
@@ -87,10 +87,16 @@ local load_session = function(session_name, notify_err)
 	static.config.on_session_to_restore(utils.session_dir())
 
 	-- load session
-	vim.cmd("silent source " .. utils.session_path(session_name))
-	vim.notify('successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
-		title = "Session",
-	})
+	ok = pcall(vim.cmd, "silent source " .. utils.session_path(session_name))
+	if ok then
+		vim.notify('Successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
+			title = "Session",
+		})
+	else
+		vim.notify('Error occurs when loading session "' .. session_name .. '"', vim.log.levels.WARN, {
+			title = "Session",
+		})
+	end
 
 	static.config.on_session_restored(utils.session_dir() .. "/" .. session_name)
 
