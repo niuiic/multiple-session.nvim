@@ -2,6 +2,8 @@
 
 Provides multi-session management capabilities.
 
+[More neovim plugins](https://github.com/niuiic/awesome-neovim-plugins)
+
 ## Features
 
 - auto load session
