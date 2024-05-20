@@ -30,7 +30,7 @@ require("multiple-session").setup({
 	-- name of default session
 	default_session = "default",
 	-- whether to auto load session when neovim start
-	auto_load_session = function(_, cur_session_path)
+	auto_load_session = function(_cur_session, cur_session_path)
 		if #vim.v.argv > 2 then
 			return false
 		end
@@ -48,7 +48,7 @@ require("multiple-session").setup({
 		return true
 	end,
 	-- whether to auto save session when neovim exits
-	auto_save_session = function(_, cur_session_path)
+	auto_save_session = function(_cur_session, cur_session_path)
 		if #vim.v.argv > 2 then
 			return false
 		end
