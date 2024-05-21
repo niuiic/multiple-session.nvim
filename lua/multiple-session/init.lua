@@ -35,7 +35,7 @@ local store_session = function(session_name)
 		core.file.mkdir(cur_session_dir)
 	end
 
-	static.config.on_session_to_save(cur_session_dir)
+	static.config.on_session_to_save(cur_session_dir, session_name)
 
 	---@diagnostic disable-next-line: param-type-mismatch
 	local ok = pcall(vim.cmd, "mks! " .. utils.session_path(cur_session))
@@ -49,7 +49,7 @@ local store_session = function(session_name)
 		})
 	end
 
-	static.config.on_session_saved(cur_session_dir)
+	static.config.on_session_saved(cur_session_dir, session_name)
 end
 
 local save_session = function(session_name)
@@ -91,7 +91,7 @@ local load_session = function(session_name, notify_err)
 		return false
 	end
 
-	static.config.on_session_to_restore(utils.session_dir() .. "/" .. session_name)
+	static.config.on_session_to_restore(utils.session_dir() .. "/" .. session_name, session_name)
 
 	-- load session
 	---@diagnostic disable-next-line: param-type-mismatch
@@ -106,7 +106,7 @@ local load_session = function(session_name, notify_err)
 		})
 	end
 
-	static.config.on_session_restored(utils.session_dir() .. "/" .. session_name)
+	static.config.on_session_restored(utils.session_dir() .. "/" .. session_name, session_name)
 
 	return true
 end

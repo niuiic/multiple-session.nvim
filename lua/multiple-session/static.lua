@@ -36,13 +36,13 @@ local config = {
 
 		return true
 	end,
-	---@type fun(session_dir: string)
+	---@type fun(session_dir: string, cur_session: string)
 	on_session_to_save = function() end,
-	---@type fun(session_dir: string)
+	---@type fun(session_dir: string, cur_session: string)
 	on_session_saved = function() end,
-	---@type fun(session_dir: string)
+	---@type fun(session_dir: string, cur_session: string)
 	on_session_to_restore = function() end,
-	---@type fun(session_dir: string)
+	---@type fun(session_dir: string, cur_session: string)
 	on_session_restored = function() end,
 }
 
