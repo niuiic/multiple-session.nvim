@@ -37,10 +37,17 @@ local store_session = function(session_name)
 
 	static.config.on_session_to_save(cur_session_dir)
 
-	vim.cmd("mks! " .. utils.session_path(cur_session))
-	vim.notify("Session is stored in " .. utils.session_path(cur_session), vim.log.levels.INFO, {
-		title = "Session",
-	})
+	---@diagnostic disable-next-line: param-type-mismatch
+	local ok = pcall(vim.cmd, "mks! " .. utils.session_path(cur_session))
+	if ok then
+		vim.notify("Session is stored in " .. utils.session_path(cur_session), vim.log.levels.INFO, {
+			title = "Session",
+		})
+	else
+		vim.notify('Error occurs when storing session "' .. session_name .. '"', vim.log.levels.WARN, {
+			title = "Session",
+		})
+	end
 
 	static.config.on_session_saved(cur_session_dir)
 end
@@ -87,6 +94,7 @@ local load_session = function(session_name, notify_err)
 	static.config.on_session_to_restore(utils.session_dir())
 
 	-- load session
+	---@diagnostic disable-next-line: param-type-mismatch
 	ok = pcall(vim.cmd, "silent source " .. utils.session_path(session_name))
 	if ok then
 		vim.notify('Successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {

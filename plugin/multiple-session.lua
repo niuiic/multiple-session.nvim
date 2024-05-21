@@ -12,12 +12,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 			return
 		end
 
-		if multiple_session.restore_session(static.config.default_session) then
-			local buf_name = vim.api.nvim_buf_get_name(0)
-			if buf_name ~= nil and buf_name ~= "" then
-				vim.cmd("e")
-			end
-		end
+		multiple_session.restore_session(cur_session)
 	end,
 	nested = true,
 })
