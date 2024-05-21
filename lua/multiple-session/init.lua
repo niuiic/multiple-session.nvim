@@ -91,7 +91,7 @@ local load_session = function(session_name, notify_err)
 		return false
 	end
 
-	static.config.on_session_to_restore(utils.session_dir())
+	static.config.on_session_to_restore(utils.session_dir() .. "/" .. session_name)
 
 	-- load session
 	---@diagnostic disable-next-line: param-type-mismatch
