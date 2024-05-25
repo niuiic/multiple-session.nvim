@@ -29,6 +29,9 @@ require("multiple-session").setup({
 	end,
 	-- name of default session
 	default_session = "default",
+	-- whether to use builtin session feature for storing/restoring
+	-- you have to implement this feature with hooks if the builtin feature is disabled
+	use_builtin_session = true,
 	-- whether to auto load session when neovim start
 	auto_load_session = function(_cur_session, cur_session_path)
 		if #vim.v.argv > 2 then
@@ -88,6 +91,15 @@ require("multiple-session").setup({
 		-- niuiic/quickfix.nvim
 		require("quickfix").store(session_dir .. "/quickfix")
 		vim.cmd("wundo " .. session_dir .. "/undo")
+	end,
+	on_session_to_restore = function()
+		-- close all buffers (optional)
+		local ok = pcall(vim.cmd, "%bd")
+		if not ok then
+			vim.notify("Some buffers are not saved", vim.log.levels.ERROR, {
+				title = "Session",
+			})
+		end
 	end,
 	on_session_restored = function(session_dir)
 		if core.file.file_or_dir_exists(session_dir .. "/" .. "breakpoints") then

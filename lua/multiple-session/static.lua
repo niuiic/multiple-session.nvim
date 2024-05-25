@@ -4,6 +4,7 @@ local config = {
 		return project_root .. "/.nvim/session"
 	end,
 	default_session = "default",
+	use_builtin_session = true,
 	auto_load_session = function(_, cur_session_path)
 		if #vim.v.argv > 2 then
 			return false

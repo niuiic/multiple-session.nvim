@@ -37,10 +37,15 @@ local store_session = function(session_name)
 
 	static.config.on_session_to_save(cur_session_dir, session_name)
 
-	---@diagnostic disable-next-line: param-type-mismatch
-	local ok = pcall(vim.cmd, "mks! " .. utils.session_path(cur_session))
+	local ok
+	if static.config.use_builtin_session then
+		---@diagnostic disable-next-line: param-type-mismatch
+		ok = pcall(vim.cmd, "mks! " .. utils.session_path(cur_session))
+	else
+		ok = true
+	end
 	if ok then
-		vim.notify("Session is stored in " .. utils.session_path(cur_session), vim.log.levels.INFO, {
+		vim.notify("Session is stored in " .. utils.session_dir(), vim.log.levels.INFO, {
 			title = "Session",
 		})
 	else
@@ -81,21 +86,16 @@ local load_session = function(session_name, notify_err)
 
 	cur_session = session_name
 
-	-- close all buffers
-	---@diagnostic disable-next-line
-	local ok = pcall(vim.cmd, "%bd")
-	if ok == false then
-		vim.notify("Some buffers are not saved", vim.log.levels.ERROR, {
-			title = "Session",
-		})
-		return false
-	end
-
 	static.config.on_session_to_restore(utils.session_dir() .. "/" .. session_name, session_name)
 
 	-- load session
-	---@diagnostic disable-next-line: param-type-mismatch
-	ok = pcall(vim.cmd, "silent source " .. utils.session_path(session_name))
+	local ok
+	if static.config.use_builtin_session then
+		---@diagnostic disable-next-line: param-type-mismatch
+		ok = pcall(vim.cmd, "silent source " .. utils.session_path(session_name))
+	else
+		ok = true
+	end
 	if ok then
 		vim.notify('Successfully load session "' .. session_name .. '"', vim.log.levels.INFO, {
 			title = "Session",
